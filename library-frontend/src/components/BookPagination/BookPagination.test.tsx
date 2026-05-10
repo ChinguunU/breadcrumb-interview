@@ -72,4 +72,23 @@ describe("BookPagination", () => {
 
     expect(screen.getByText("3 of 3")).toBeInTheDocument();
   });
+
+  it("should clamp currentPage when totalPages decreases below it", async () => {
+    const { rerender } = renderWithProviders(<BookPagination totalPages={3} />);
+
+    const nextButton = screen.getByRole("button", { name: "Next" });
+
+    await userEvent.click(nextButton);
+    await userEvent.click(nextButton);
+
+    expect(screen.getByText("3 of 3")).toBeInTheDocument();
+
+    rerender(
+      <BookFiltersProvider>
+        <BookPagination totalPages={2} />
+      </BookFiltersProvider>,
+    );
+
+    expect(screen.getByText("2 of 2")).toBeInTheDocument();
+  });
 });
